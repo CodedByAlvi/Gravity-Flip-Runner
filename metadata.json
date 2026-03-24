@@ -1,0 +1,5 @@
+{
+  "name": "Gravity Flip Runner",
+  "description": "A fast-paced 2D endless runner where you flip gravity to avoid obstacles and survive as long as possible.",
+  "requestFramePermissions": []
+}

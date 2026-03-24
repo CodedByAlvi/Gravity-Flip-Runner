@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-100 overflow-hidden select-none touch-none fixed inset-0 w-full h-full;
+  font-family: var(--font-sans);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.game-canvas {
+  image-rendering: pixelated;
+}
+
+/* Orientation Fallback */
+@media screen and (orientation: portrait) {
+  .portrait-warning {
+    display: flex !important;
+  }
+}
+
+.portrait-warning {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #09090b;
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.rotate-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1.5rem;
+  animation: rotate-device 2s infinite ease-in-out;
+}
+
+@keyframes rotate-device {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  75% { transform: rotate(90deg); }
+  100% { transform: rotate(0deg); }
+}
+
