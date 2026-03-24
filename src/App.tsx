@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Home, Pause, Volume2, VolumeX, Trophy, User, Settings2, ChevronLeft, ChevronRight, Zap, Shield, Info, Layers, Gamepad2, Smartphone, Maximize, BarChart3, MousePointer2, ShieldAlert, RotateCw } from 'lucide-react';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { GameState, Player, Obstacle, Particle, Character, Difficulty, BackgroundObject } from './types';
 
 const CANVAS_WIDTH = 800;
@@ -361,8 +362,16 @@ const PowerUpPreview = ({ type }: { type: 'SHIELD' | 'ENERGY_CONDUIT' | 'VOID_GA
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pixelRatioRef = useRef(window.devicePixelRatio || 1);
   const [isPortrait, setIsPortrait] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLowPerformance, setIsLowPerformance] = useState(() => {
+    // Initial guess based on hardware
+    const memory = (navigator as any).deviceMemory;
+    const cores = navigator.hardwareConcurrency;
+    return (memory && memory <= 4) || (cores && cores <= 4);
+  });
+  const frameTimesRef = useRef<number[]>([]);
 
   const requestFullscreen = useCallback(async () => {
     try {
@@ -391,17 +400,32 @@ export default function App() {
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && isFullscreen) {
-        const screenAny = screen as any;
-        if (screenAny.orientation && screenAny.orientation.lock) {
-          screenAny.orientation.lock('landscape').catch(() => {});
+      if (document.visibilityState === 'visible') {
+        lastTimeRef.current = 0; // Reset time to prevent delta jump
+        if (isFullscreen) {
+          const screenAny = screen as any;
+          if (screenAny.orientation && screenAny.orientation.lock) {
+            screenAny.orientation.lock('landscape').catch(() => {});
+          }
         }
+      } else {
+        // Auto-pause when hidden
+        if (gameState.status === 'PLAYING') {
+          setGameState(prev => ({ ...prev, status: 'PAUSED' }));
+        }
+      }
+    };
+
+    const handleBlur = () => {
+      if (gameState.status === 'PLAYING') {
+        setGameState(prev => ({ ...prev, status: 'PAUSED' }));
       }
     };
 
     checkState();
     window.addEventListener('resize', checkState);
     window.addEventListener('orientationchange', checkState);
+    window.addEventListener('blur', handleBlur);
     document.addEventListener('fullscreenchange', checkState);
     document.addEventListener('webkitfullscreenchange', checkState);
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -409,15 +433,36 @@ export default function App() {
     return () => {
       window.removeEventListener('resize', checkState);
       window.removeEventListener('orientationchange', checkState);
+      window.removeEventListener('blur', handleBlur);
       document.removeEventListener('fullscreenchange', checkState);
       document.removeEventListener('webkitfullscreenchange', checkState);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isFullscreen]);
 
+  const safeStorage = {
+    getItem: (key: string) => {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    },
+    setItem: (key: string, value: string) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {}
+    },
+    removeItem: (key: string) => {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {}
+    }
+  };
+
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
-    highScore: parseInt(localStorage.getItem('highScore') || '0'),
+    highScore: parseInt(safeStorage.getItem('highScore') || '0'),
     status: 'MENU',
     speed: DIFFICULTY_SETTINGS.EASY.speed,
     distance: 0,
@@ -428,10 +473,10 @@ export default function App() {
     nearMissCount: 0,
     combo: 0,
     multiplier: 1,
-    totalDistance: parseInt(localStorage.getItem('totalDistance') || '0'),
-    totalNearMisses: parseInt(localStorage.getItem('totalNearMisses') || '0'),
-    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-    tutorialCompleted: localStorage.getItem('tutorialCompleted') === 'true',
+    totalDistance: parseInt(safeStorage.getItem('totalDistance') || '0'),
+    totalNearMisses: parseInt(safeStorage.getItem('totalNearMisses') || '0'),
+    gamesPlayed: parseInt(safeStorage.getItem('gamesPlayed') || '0'),
+    tutorialCompleted: safeStorage.getItem('tutorialCompleted') === 'true',
   });
 
   // Engine State Refs (High-frequency data)
@@ -799,10 +844,10 @@ export default function App() {
     const newIntensity = Math.max(1.0, engineRef.current.adaptiveIntensity - settings.adaptiveRampDown);
     engineRef.current.adaptiveIntensity = newIntensity;
 
-    localStorage.setItem('highScore', newHighScore.toString());
-    localStorage.setItem('totalDistance', newTotalDistance.toString());
-    localStorage.setItem('totalNearMisses', newTotalNearMisses.toString());
-    localStorage.setItem('gamesPlayed', newGamesPlayed.toString());
+    safeStorage.setItem('highScore', newHighScore.toString());
+    safeStorage.setItem('totalDistance', newTotalDistance.toString());
+    safeStorage.setItem('totalNearMisses', newTotalNearMisses.toString());
+    safeStorage.setItem('gamesPlayed', newGamesPlayed.toString());
 
     setGameState(prev => ({
       ...prev,
@@ -1163,7 +1208,7 @@ export default function App() {
       return;
     }
 
-    const settings = DIFFICULTY_SETTINGS[gameState.difficulty];
+    const settings = DIFFICULTY_SETTINGS[gameState.difficulty] || DIFFICULTY_SETTINGS['EASY'];
     
     // Impact freeze/slowdown
     if (playerRef.current.hitTimer && playerRef.current.hitTimer > 0) {
@@ -1219,7 +1264,7 @@ export default function App() {
         // Step 2: Avoided the barrier
         if (tutorialStep === 2 && gameState.distance > 1200) {
           setTutorialStep(3);
-          localStorage.setItem('tutorialCompleted', 'true');
+          safeStorage.setItem('tutorialCompleted', 'true');
           setGameState(prev => ({ ...prev, status: 'PLAYING', tutorialCompleted: true }));
         }
       }
@@ -1768,7 +1813,6 @@ export default function App() {
         speed: newSpeed,
         distance: prev.distance + distanceGain,
         score: prev.score + scoreGain,
-        totalDistance: prev.totalDistance + distanceGain
       }));
     }
 
@@ -1818,7 +1862,8 @@ export default function App() {
     }
     
     // 1. Far background stars (twinkling)
-    for (let i = 0; i < 150; i++) {
+    const starCount = isLowPerformance ? 50 : 150;
+    for (let i = 0; i < starCount; i++) {
       const x = (Math.sin(i * 123.45) * 2000 + backgroundXRef.current * 0.05) % CANVAS_WIDTH;
       const y = (Math.cos(i * 678.9) * 2000) % CANVAS_HEIGHT;
       const twinkle = Math.sin(Date.now() * 0.002 + i) * 0.5 + 0.5;
@@ -1829,6 +1874,11 @@ export default function App() {
     }
 
     // 2. Dynamic Background Objects (Parallax Layers)
+    const maxBgObjects = isLowPerformance ? 10 : 40;
+    if (backgroundObjectsRef.current.length > maxBgObjects) {
+      backgroundObjectsRef.current = backgroundObjectsRef.current.slice(-maxBgObjects);
+    }
+
     [1, 2, 3, 4].forEach(layer => {
       backgroundObjectsRef.current.filter(obj => obj.layer === layer).forEach(obj => {
         ctx.save();
@@ -3145,6 +3195,11 @@ export default function App() {
     ctx.shadowBlur = 0;
 
     // Draw particles
+    const maxParticles = isLowPerformance ? 30 : 150;
+    if (particlesRef.current.length > maxParticles) {
+      particlesRef.current = particlesRef.current.slice(-maxParticles);
+    }
+
     particlesRef.current.forEach(p => {
       ctx.globalAlpha = p.life;
       ctx.fillStyle = p.color;
@@ -3190,13 +3245,30 @@ export default function App() {
   }
 
   const gameLoop = useCallback((time: number) => {
-    const ctx = canvasRef.current?.getContext('2d');
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
     if (ctx) {
+      // Performance monitoring
+      const now = performance.now();
+      frameTimesRef.current.push(now);
+      if (frameTimesRef.current.length > 60) {
+        frameTimesRef.current.shift();
+        const fps = 1000 / ((frameTimesRef.current[59] - frameTimesRef.current[0]) / 60);
+        if (fps < 45 && !isLowPerformance) setIsLowPerformance(true);
+        else if (fps > 55 && isLowPerformance) setIsLowPerformance(false);
+      }
+
       updateRef.current(time);
+      
+      ctx.save();
+      ctx.scale(canvas.width / CANVAS_WIDTH, canvas.height / CANVAS_HEIGHT);
       drawRef.current(ctx);
+      ctx.restore();
     }
     requestRef.current = requestAnimationFrame(gameLoop);
-  }, []); // Stable game loop
+  }, [isLowPerformance]); // Stable game loop
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(gameLoop);
@@ -3211,8 +3283,13 @@ export default function App() {
     if (!container) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      // Force a redraw or handle any specific resize logic if needed
-      // CSS object-contain handles the visual scaling
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      pixelRatioRef.current = dpr;
     });
 
     resizeObserver.observe(container);
@@ -3232,7 +3309,15 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center bg-zinc-950 overflow-hidden font-sans" onClick={handleFlip}>
+    <ErrorBoundary>
+      <div className="relative w-full h-screen flex items-center justify-center bg-zinc-950 overflow-hidden font-sans select-none touch-none" 
+         style={{ 
+           paddingTop: 'env(safe-area-inset-top)',
+           paddingBottom: 'env(safe-area-inset-bottom)',
+           paddingLeft: 'env(safe-area-inset-left)',
+           paddingRight: 'env(safe-area-inset-right)'
+         }}
+         onClick={handleFlip}>
       {/* Immersive Overlays */}
       <AnimatePresence>
         {isPortrait && (
@@ -3361,7 +3446,7 @@ export default function App() {
                    <button 
                      onClick={(e) => {
                        e.stopPropagation();
-                       localStorage.setItem('tutorialCompleted', 'true');
+                       safeStorage.setItem('tutorialCompleted', 'true');
                        setGameState(prev => ({ ...prev, status: 'PLAYING', tutorialCompleted: true }));
                      }}
                      className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-all hover:scale-105 pointer-events-auto flex items-center gap-2"
@@ -3477,10 +3562,10 @@ export default function App() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        localStorage.removeItem('highScore');
-                        localStorage.removeItem('totalDistance');
-                        localStorage.removeItem('totalNearMisses');
-                        localStorage.removeItem('gamesPlayed');
+                        safeStorage.removeItem('highScore');
+                        safeStorage.removeItem('totalDistance');
+                        safeStorage.removeItem('totalNearMisses');
+                        safeStorage.removeItem('gamesPlayed');
                         setGameState(prev => ({ 
                           ...prev, 
                           highScore: 0, 
@@ -4062,5 +4147,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
