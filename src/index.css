@@ -7,8 +7,15 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+html, body {
+  @apply overflow-hidden fixed inset-0 w-full h-full;
+  margin: 0;
+  padding: 0;
+  background: #09090b; /* bg-zinc-950 */
+}
+
 body {
-  @apply bg-zinc-950 text-zinc-100 overflow-hidden select-none touch-none fixed inset-0 w-full h-full;
+  @apply text-zinc-100 select-none touch-none;
   font-family: var(--font-sans);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }

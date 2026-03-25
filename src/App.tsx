@@ -3310,13 +3310,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="relative w-full h-screen flex items-center justify-center bg-zinc-950 overflow-hidden font-sans select-none touch-none" 
-         style={{ 
-           paddingTop: 'env(safe-area-inset-top)',
-           paddingBottom: 'env(safe-area-inset-bottom)',
-           paddingLeft: 'env(safe-area-inset-left)',
-           paddingRight: 'env(safe-area-inset-right)'
-         }}
+      <div className="fixed inset-0 flex items-center justify-center bg-zinc-950 overflow-hidden font-sans select-none touch-none" 
          onClick={handleFlip}>
       {/* Immersive Overlays */}
       <AnimatePresence>
@@ -3360,12 +3354,23 @@ export default function App() {
       </AnimatePresence>
 
       {/* Game Canvas Container */}
-      <div className={`relative w-full h-full flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-4 md:p-8'}`}>
-        <div className={`relative shadow-2xl shadow-blue-900/20 overflow-hidden transition-all duration-500 ${
-          isFullscreen 
-            ? 'w-full h-full' 
-            : 'aspect-[16/9] w-full max-w-5xl md:max-h-[90vh] md:border md:border-zinc-800 md:rounded-lg'
-        }`}>
+      <div className={`relative w-full h-full flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-2 md:p-4 lg:p-8'}`}>
+        <div 
+          className={`relative shadow-2xl shadow-blue-900/20 overflow-hidden transition-all duration-500 ${
+            isFullscreen 
+              ? '' 
+              : 'md:border md:border-zinc-800 md:rounded-lg'
+          }`}
+          style={{
+            width: isFullscreen 
+              ? 'min(100dvw, calc(100dvh * 16/9))' 
+              : 'min(calc(100dvw - 2rem), calc((100dvh - 2rem) * 16/9))',
+            height: isFullscreen 
+              ? 'min(100dvh, calc(100dvw * 9/16))' 
+              : 'min(calc(100dvh - 2rem), calc((100dvw - 2rem) * 9/16))',
+            aspectRatio: '16/9'
+          }}
+        >
           <canvas
             ref={canvasRef}
             width={CANVAS_WIDTH}
