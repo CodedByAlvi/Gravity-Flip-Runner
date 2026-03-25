@@ -3472,98 +3472,99 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
-              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8 text-center"
+              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-6 text-center"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-4">
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="mb-4 md:mb-6"
+                className="mb-2 md:mb-4"
               >
-                <h1 className="text-6xl md:text-8xl font-display font-black tracking-tighter text-white leading-[0.85]">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black tracking-tighter text-white leading-[0.85]">
                   GRAVITY<br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">FLIP</span>
                 </h1>
-                <p className="text-zinc-500 font-mono text-[10px] mt-3 tracking-[0.4em] uppercase opacity-80">VOID-RUNNER INITIATED // SECTOR 7 BYPASS</p>
+                <p className="text-zinc-500 font-mono text-[8px] md:text-[10px] mt-2 tracking-[0.4em] uppercase opacity-80">VOID-RUNNER INITIATED // SECTOR 7 BYPASS</p>
               </motion.div>
               
-              <div className="flex flex-col gap-3 w-full max-w-[320px] md:max-w-sm">
+              <div className="flex flex-col gap-2 w-full max-w-[280px] md:max-w-sm">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setGameState(prev => ({ ...prev, status: 'DIFF_SELECT' }));
                   }}
-                  className="group relative flex items-center justify-center gap-3 bg-white text-black py-4 md:py-5 px-8 rounded-2xl font-bold text-xl md:text-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.15)] overflow-hidden"
+                  className="group relative flex items-center justify-center gap-3 bg-white text-black py-3 md:py-4 px-8 rounded-xl md:rounded-2xl font-bold text-lg md:text-xl lg:text-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.15)] overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  <Play size={24} fill="currentColor" />
+                  <Play size={20} className="md:w-6 md:h-6" fill="currentColor" />
                   INITIATE RUN
                 </button>
                 
-                <div className="grid grid-cols-3 gap-2 md:gap-3">
+                <div className="grid grid-cols-3 gap-1.5 md:gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setGameState(prev => ({ ...prev, status: 'CHAR_SELECT' }));
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    <User size={18} className="group-hover:text-cyan-400 transition-colors" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Avatar</span>
+                    <User size={16} className="md:w-[18px] md:h-[18px] group-hover:text-cyan-400 transition-colors" />
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Avatar</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setGameState(prev => ({ ...prev, status: 'POWERUPS_INFO' }));
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    <Zap size={18} className="group-hover:text-blue-400 transition-colors" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Powerups</span>
+                    <Zap size={16} className="md:w-[18px] md:h-[18px] group-hover:text-blue-400 transition-colors" />
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Powerups</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setGameState(prev => ({ ...prev, status: 'CONTROLS_INFO' }));
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    <Gamepad2 size={18} className="group-hover:text-orange-400 transition-colors" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Controls</span>
+                    <Gamepad2 size={16} className="md:w-[18px] md:h-[18px] group-hover:text-orange-400 transition-colors" />
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Controls</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFullScreen();
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    <Maximize size={18} className="group-hover:text-emerald-400 transition-colors" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Full</span>
+                    <Maximize size={16} className="md:w-[18px] md:h-[18px] group-hover:text-emerald-400 transition-colors" />
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Full</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setGameState(prev => ({ ...prev, status: 'STATS' }));
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    <BarChart3 size={18} className="group-hover:text-yellow-400 transition-colors" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Stats</span>
+                    <BarChart3 size={16} className="md:w-[18px] md:h-[18px] group-hover:text-yellow-400 transition-colors" />
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Stats</span>
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setSoundEnabled(!soundEnabled);
                     }}
-                    className="flex flex-col items-center justify-center gap-1.5 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-3 md:py-4 rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
+                    className="flex flex-col items-center justify-center gap-1 bg-zinc-900/80 border border-zinc-800 text-zinc-300 py-2 md:py-3 rounded-xl md:rounded-2xl hover:bg-zinc-800 transition-all hover:border-zinc-600 group"
                   >
-                    {soundEnabled ? <Volume2 size={18} className="group-hover:text-purple-400 transition-colors" /> : <VolumeX size={18} className="text-zinc-600" />}
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Audio</span>
+                    {soundEnabled ? <Volume2 size={16} className="md:w-[18px] md:h-[18px] group-hover:text-purple-400 transition-colors" /> : <VolumeX size={16} className="md:w-[18px] md:h-[18px] text-zinc-600" />}
+                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider">Audio</span>
                   </button>
                 </div>
 
                 {showResetConfirm ? (
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -3580,7 +3581,7 @@ export default function App() {
                         }));
                         setShowResetConfirm(false);
                       }}
-                      className="flex-1 bg-red-500/80 text-white py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-red-600 transition-colors"
+                      className="flex-1 bg-red-500/80 text-white py-2.5 rounded-xl font-bold text-[9px] uppercase tracking-widest hover:bg-red-600 transition-colors"
                     >
                       Confirm Reset
                     </button>
@@ -3589,7 +3590,7 @@ export default function App() {
                         e.stopPropagation();
                         setShowResetConfirm(false);
                       }}
-                      className="flex-1 bg-zinc-800 text-zinc-300 py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-700 transition-colors"
+                      className="flex-1 bg-zinc-800 text-zinc-300 py-2.5 rounded-xl font-bold text-[9px] uppercase tracking-widest hover:bg-zinc-700 transition-colors"
                     >
                       Cancel
                     </button>
@@ -3600,29 +3601,30 @@ export default function App() {
                       e.stopPropagation();
                       setShowResetConfirm(true);
                     }}
-                    className="w-full mt-2 flex items-center justify-center gap-2 bg-zinc-900/40 border border-zinc-800/50 text-zinc-500 py-3 rounded-2xl hover:bg-zinc-800 transition-all font-bold text-[10px] uppercase tracking-widest group hover:border-red-500/30 hover:text-red-400"
+                    className="w-full mt-1 flex items-center justify-center gap-2 bg-zinc-900/40 border border-zinc-800/50 text-zinc-500 py-2.5 rounded-xl hover:bg-zinc-800 transition-all font-bold text-[9px] uppercase tracking-widest group hover:border-red-500/30 hover:text-red-400"
                   >
-                    <RotateCcw size={14} className="group-hover:rotate-[-90deg] transition-transform" />
+                    <RotateCcw size={12} className="group-hover:rotate-[-90deg] transition-transform" />
                     Reset High Scores
                   </button>
                 )}
 
-                <div className="bg-zinc-900/40 border border-zinc-800/50 p-3 md:p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20 transition-colors">
-                      <Trophy size={18} className="text-yellow-500" />
+                <div className="bg-zinc-900/40 border border-zinc-800/50 p-2.5 md:p-3 rounded-xl md:rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="p-1.5 md:p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20 transition-colors">
+                      <Trophy size={16} className="md:w-[18px] md:h-[18px] text-yellow-500" />
                     </div>
                     <div className="text-left">
-                      <span className="block text-[9px] font-mono text-zinc-500 uppercase tracking-widest">Personal Best</span>
-                      <span className="text-lg font-display font-bold text-white tracking-tight">{gameState.highScore}m</span>
+                      <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest">Personal Best</span>
+                      <span className="text-base md:text-lg font-display font-bold text-white tracking-tight">{gameState.highScore}m</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="block text-[9px] font-mono text-zinc-500 uppercase tracking-widest">Mode</span>
-                    <span className="text-[11px] font-bold text-blue-400 uppercase tracking-tight">{gameState.difficulty}</span>
+                    <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest">Mode</span>
+                    <span className="text-[10px] md:text-[11px] font-bold text-blue-400 uppercase tracking-tight">{gameState.difficulty}</span>
                   </div>
                 </div>
               </div>
+            </div>
 
               <div className="absolute bottom-6 flex items-center gap-4 text-zinc-700 text-[8px] font-mono uppercase tracking-[0.3em]">
               </div>
@@ -3635,8 +3637,9 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-8"
+              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               <div className="mb-8 text-center">
                 <h2 className="text-4xl font-display font-bold text-white mb-2 uppercase tracking-tighter">Powerups</h2>
                 <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">Enhance your unit</p>
@@ -3719,6 +3722,7 @@ export default function App() {
                 <ChevronLeft size={20} />
                 BACK TO MENU
               </button>
+              </div>
             </motion.div>
           )}
 
@@ -3728,8 +3732,9 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-8"
+              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               <div className="mb-12 text-center">
                 <h2 className="text-4xl font-display font-bold text-white mb-2 uppercase tracking-tighter">Lifetime Stats</h2>
                 <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">Your neural history</p>
@@ -3777,6 +3782,7 @@ export default function App() {
                 <ChevronLeft size={20} />
                 BACK TO MENU
               </button>
+              </div>
             </motion.div>
           )}
           {gameState.status === 'CONTROLS_INFO' && (
@@ -3785,8 +3791,9 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-8"
+              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               <div className="mb-8 text-center">
                 <h2 className="text-4xl font-display font-bold text-white mb-2 uppercase tracking-tighter">Controls</h2>
                 <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">Master the neural link</p>
@@ -3861,6 +3868,7 @@ export default function App() {
                 <ChevronLeft size={20} />
                 BACK TO MENU
               </button>
+              </div>
             </motion.div>
           )}
 
@@ -3870,8 +3878,9 @@ export default function App() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
-              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8"
+              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               <div className="mb-6 md:mb-8 text-center">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-1">SELECT AVATAR</h2>
                 <p className="text-zinc-500 font-mono text-[10px] tracking-widest uppercase">Choose your runner unit</p>
@@ -3918,6 +3927,7 @@ export default function App() {
                 <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                 Back to Menu
               </button>
+              </div>
             </motion.div>
           )}
 
@@ -3927,8 +3937,9 @@ export default function App() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
-              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8"
+              className="absolute inset-0 bg-zinc-950/95 backdrop-blur-md flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3983,6 +3994,7 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              </div>
             </motion.div>
           )}
 
@@ -4023,8 +4035,9 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden"
+              className="absolute inset-0 bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center overflow-y-auto scrollbar-hide p-4 md:p-8"
             >
+              <div className="min-h-full flex flex-col items-center justify-center w-full py-8">
               {/* Animated Background Loop */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[...Array(8)].map((_, i) => (
@@ -4146,6 +4159,7 @@ export default function App() {
                   RETURN TO BASE
                 </button>
               </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
